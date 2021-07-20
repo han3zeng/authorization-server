@@ -1,0 +1,39 @@
+{
+  "name": "oauth-server",
+  "version": "1.0.0",
+  "description": "this is the oauth server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "PORT=8080 nodemon ./server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/han3zeng/oauth-server.git"
+  },
+  "keywords": [
+    "github",
+    "google",
+    "apple",
+    "password"
+  ],
+  "author": "han3zeng",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/han3zeng/oauth-server/issues"
+  },
+  "homepage": "https://github.com/han3zeng/oauth-server#readme",
+  "dependencies": {
+    "express": "^5.0.0-alpha.8",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.28.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "nodemon": "^2.0.12",
+    "standard": "^16.0.3"
+  }
+}
