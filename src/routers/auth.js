@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const { githubSecret } = require('../../secrets');
 
-router.post('/github/access_token', async function (req, res, next) {
+router.post('/github', async function (req, res, next) {
   const body = req.body;
   const { code, clientID, redirectUri } = body;
   const options = {
@@ -27,7 +27,11 @@ router.post('/github/access_token', async function (req, res, next) {
     .then((response) => {
       response.json()
         .then((data) => {
-          console.log('data: ', data);
+          res.json({
+            accessToken: data.access_token,
+            tokenType: data.token_type,
+            scope: data.scope
+          });
         })
         .catch((err) => {
           console.log('err: ', err);

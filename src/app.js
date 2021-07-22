@@ -1,10 +1,10 @@
 const express = require('express');
 const app = express();
-const { loginRouter } = require('./routers');
+const { authRouter } = require('./routers');
 const { cors } = require('./middlewares');
 
 app.use(cors);
 app.use(express.json());
-app.use('/login/oauth', loginRouter);
+app.use('/auth', authRouter);
 
 module.exports = app;
