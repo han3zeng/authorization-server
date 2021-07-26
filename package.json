@@ -24,7 +24,10 @@
   },
   "homepage": "https://github.com/han3zeng/oauth-server#readme",
   "dependencies": {
+    "dotenv": "^10.0.0",
     "express": "^5.0.0-alpha.8",
+    "mongodb": "^4.0.1",
+    "mongoose": "^5.13.3",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
