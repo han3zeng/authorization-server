@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
-const { githubSecret } = require('../../secrets');
+const { githubSecret, googleSecret } = require('../../secrets');
 const { userSchema } = require('../db/models');
 const mongoose = require('mongoose');
+const { getPaylodFromJWT } = require('../utils');
 
 // return type:
 // accessToken: data.access_token,
@@ -12,8 +13,41 @@ const mongoose = require('mongoose');
 async function fetchAccessToken ({
   code,
   clientID,
-  redirectUri
+  redirectUri,
+  service
 }) {
+  const url = (() => {
+    switch (service) {
+      case 'github':
+        return 'https://github.com/login/oauth/access_token';
+      case 'google':
+        return 'https://oauth2.googleapis.com/token';
+      default:
+        return '';
+    }
+  })();
+
+  const body = (() => {
+    const base = {
+      code,
+      client_id: clientID,
+      redirect_uri: redirectUri
+    };
+    if (service === 'github') {
+      return {
+        ...base,
+        client_secret: githubSecret
+      };
+    }
+    if (service === 'google') {
+      return {
+        ...base,
+        grant_type: 'authorization_code',
+        client_secret: googleSecret
+      };
+    }
+  })();
+
   const options = {
     method: 'POST',
     mode: 'cors',
@@ -24,14 +58,9 @@ async function fetchAccessToken ({
     },
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
-    body: JSON.stringify({
-      code,
-      client_id: clientID,
-      redirect_uri: redirectUri,
-      client_secret: githubSecret
-    })
+    body: JSON.stringify(body)
   };
-  const response = await fetch('https://github.com/login/oauth/access_token', options);
+  const response = await fetch(url, options);
   const data = await response.json();
   return data;
 }
@@ -53,15 +82,16 @@ async function fetchUserProfile ({
   return {
     name: data.name,
     email: data.email,
-    avatarURL: data.avatar_url
+    avatarURL: data.avatar_url,
+    sub: data.id
   };
 }
 
 async function createUser (storeData) {
   const User = mongoose.model(userSchema.key, userSchema.schema);
-  const { email } = storeData;
+  const { sub } = storeData;
   const ifExisted = await User.exists({
-    email
+    sub
   });
   if (!ifExisted) {
     await User.create({
@@ -69,9 +99,9 @@ async function createUser (storeData) {
     });
   } else {
     await User.updateOne({
-      email
+      sub
     }, {
-      accessToken: storeData.accessToken
+      ...storeData
     });
   }
 }
@@ -84,7 +114,8 @@ router.post('/github', async function (req, res, next) {
     const data = await fetchAccessToken({
       code,
       clientID,
-      redirectUri
+      redirectUri,
+      service: 'github'
     });
     const accessToken = data.access_token;
     if (accessToken) {
@@ -94,7 +125,56 @@ router.post('/github', async function (req, res, next) {
     }
     const storeData = {
       accessToken,
-      ...userProfile
+      tokenType: data.token_type,
+      scope: data.scope,
+      ...userProfile,
+      authorizationServer: 'github'
+    };
+    await createUser(storeData);
+    res.status(200).json({
+      accessToken
+    });
+  } catch (e) {
+    console.log('e: ', e);
+  }
+});
+
+router.post('/google', async function (req, res, next) {
+  const body = req.body;
+  const { code, clientID, redirectUri } = body;
+  try {
+    const data = await fetchAccessToken({
+      code,
+      clientID,
+      redirectUri,
+      service: 'google'
+    });
+    const {
+      access_token: accessToken,
+      expires_in: expiresIn,
+      refresh_token: refreshToken,
+      scope,
+      token_type: tokenType,
+      id_token: idToken
+    } = data;
+    const userInfo = getPaylodFromJWT({ jwt: idToken });
+    const {
+      sub,
+      email,
+      name,
+      picture: avatarURL
+    } = userInfo;
+    const storeData = {
+      accessToken,
+      refreshToken,
+      scope,
+      tokenType,
+      idToken,
+      sub,
+      email,
+      name,
+      avatarURL,
+      authorizationServer: 'google'
     };
     await createUser(storeData);
     res.status(200).json({

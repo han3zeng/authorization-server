@@ -3,9 +3,15 @@ const { Schema } = mongoose;
 
 const schema = new Schema({
   accessToken: String,
+  refreshToken: String,
+  scope: String,
+  tokenType: String,
+  idToken: String,
+  sub: String,
   email: String,
   name: String,
-  avatarURL: String
+  avatarURL: String,
+  authorizationServer: String
 }, {
   timestamps: {
     currentTime: () => {
