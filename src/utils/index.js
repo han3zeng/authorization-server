@@ -1,3 +1,5 @@
+const mailTransporter = require('./mail-transporter')
+
 const getPaylodFromJWT = ({
   jwt
 }) => {
@@ -7,5 +9,6 @@ const getPaylodFromJWT = ({
 };
 
 module.exports = {
-  getPaylodFromJWT
+  getPaylodFromJWT,
+  mailTransporter
 };

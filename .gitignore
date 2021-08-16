@@ -105,3 +105,5 @@ dist
 
 # system
 secrets.js
+token.json
+dump.rdb
