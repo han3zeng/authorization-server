@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const { v4 } = require('uuid');
 const mongoose = require('mongoose');
-const { pendingUserSchema } = require('../db/models');
+const { pendingUserSchema, userSchema } = require('../db/models');
 const { hashPassword } = require('../utils/password-auth-code');
 const uuidv4 = v4;
 const { mailTransporter } = require('../utils');
@@ -18,9 +18,8 @@ router.post('/authorize', async function (req, res, next) {
   } = body;
   const authorizationCode = uuidv4();
   const PendingUser = mongoose.model(pendingUserSchema.key, pendingUserSchema.schema);
-  const ifExisted = await PendingUser.exists({
-    email
-  });
+  const User = mongoose.model(userSchema.key, userSchema.schema);
+  const ifExisted = await PendingUser.exists({ email }) || await User.exists({ email });
   if (!ifExisted) {
     await PendingUser.create({
       username,
@@ -45,7 +44,7 @@ router.post('/authorize', async function (req, res, next) {
         res.status(200).json({
           ok: false,
           error: err,
-          message: 'Something went wrong during sending mail'
+          message: 'Something went wrong in mail system'
         });
         next();
       } else {
