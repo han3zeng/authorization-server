@@ -42,17 +42,23 @@ router.post('/authorize', async function (req, res, next) {
       text: `please click on the following url to initate your account and login: ${url}`
     }, (err, info) => {
       if (err) {
-        console.log('error: ', err);
+        res.status(200).json({
+          ok: false,
+          error: err,
+          message: 'Something went wrong during sending mail'
+        });
+        next();
+      } else {
+        res.status(200).json({
+          ok: true,
+          message: 'Receive auth code successfully'
+        });
       }
-    });
-    res.status(200).json({
-      ok: true,
-      message: 'receive auth code successfully'
     });
   } else {
     res.status(200).json({
-      ok: true,
-      message: 'the mail has been used to sign up'
+      ok: false,
+      message: 'The mail has been used to sign up'
     });
   }
 });

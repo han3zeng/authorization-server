@@ -11,7 +11,8 @@ const schema = new Schema({
   email: String,
   name: String,
   avatarURL: String,
-  authorizationServer: String
+  authorizationServer: String,
+  password: String
 }, {
   timestamps: {
     currentTime: () => {

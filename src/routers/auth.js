@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const { githubSecret, googleSecret } = require('../../secrets');
-const { userSchema } = require('../db/models');
+const { userSchema, pendingUserSchema } = require('../db/models');
 const mongoose = require('mongoose');
 const { getPaylodFromJWT } = require('../utils');
+const { createAccessToken } = require('../utils/password-auth-code');
 
 // return type:
 // accessToken: data.access_token,
@@ -183,6 +184,41 @@ router.post('/google', async function (req, res, next) {
   } catch (e) {
     console.log('e: ', e);
   }
+});
+
+router.post('/account', async function (req, res, next) {
+  const { code } = req.body;
+  const PendingUserSchema = mongoose.model(pendingUserSchema.key, pendingUserSchema.schema);
+  const pendingUser = await PendingUserSchema.findOneAndDelete({ authorizationCode: code });
+  if (!pendingUser) {
+    res.status(200).json({
+      ok: false,
+      message: 'Invalid auth code'
+    });
+    return;
+  }
+  const {
+    _id,
+    username,
+    email,
+    password
+  } = pendingUser;
+  const accessToken = createAccessToken(email);
+  const storeData = {
+    sub: _id,
+    accessToken,
+    tokenType: 'Bearer',
+    authorizationServer: 'account',
+    email,
+    name: username,
+    avatarURL: null,
+    password
+  };
+  await createUser(storeData);
+  res.status(200).json({
+    ok: true,
+    accessToken
+  });
 });
 
 module.exports = router;

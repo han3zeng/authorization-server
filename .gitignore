@@ -107,3 +107,4 @@ dist
 secrets.js
 token.json
 dump.rdb
+credentials.js
