@@ -133,9 +133,14 @@ router.post('/github', async function (req, res, next) {
     };
     await createUser(storeData);
     res.status(200).json({
+      ok: true,
       accessToken
     });
   } catch (e) {
+    res.status(200).json({
+      ok: false,
+      message: 'invalid auth code'
+    });
     console.log('e: ', e);
   }
 });
@@ -179,10 +184,14 @@ router.post('/google', async function (req, res, next) {
     };
     await createUser(storeData);
     res.status(200).json({
+      ok: true,
       accessToken
     });
   } catch (e) {
-    console.log('e: ', e);
+    res.status(200).json({
+      ok: false,
+      message: 'invalid auth code'
+    });
   }
 });
 

@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const fetch = require('node-fetch');
 const { v4 } = require('uuid');
 const mongoose = require('mongoose');
 const { pendingUserSchema, userSchema } = require('../db/models');
-const { hashPassword } = require('../utils/password-auth-code');
+const { hashPassword, recreateHash, createAccessToken } = require('../utils/password-auth-code');
+const { randomBytesSize } = require('../../secrets.js');
 const uuidv4 = v4;
-const { mailTransporter } = require('../utils');
+const { mailTransporter, createUser } = require('../utils');
 const { clientOrigin, clientCallbackPath } = require('../config');
 
 router.post('/authorize', async function (req, res, next) {
@@ -58,6 +58,50 @@ router.post('/authorize', async function (req, res, next) {
     res.status(200).json({
       ok: false,
       message: 'The mail has been used to sign up'
+    });
+  }
+});
+
+router.post('/sign-in', async function (req, res, next) {
+  const { email, password } = req.body;
+  const User = mongoose.model(userSchema.key, userSchema.schema);
+  const user = await User.findOne({ email, authorizationServer: 'account' });
+  if (user) {
+    const { password: storedPassword, accessToken, sub } = user;
+    const salt = storedPassword.slice(0, randomBytesSize * 2);
+    const passwordHash = recreateHash({
+      password,
+      salt
+    });
+    if (passwordHash === storedPassword) {
+      if (accessToken) {
+        res.status(200).json({
+          ok: true,
+          accessToken
+        });
+      } else {
+        const accessToken = createAccessToken(email);
+        await User.updateOne({
+          sub
+        }, {
+          accessToken
+        });
+        res.status(200).json({
+          ok: true,
+          message: 'Receive valid access token',
+          accessToken
+        });
+      }
+    } else {
+      res.status(401).json({
+        ok: false,
+        message: 'Incorrect email or password word'
+      });
+    }
+  } else {
+    res.status(401).json({
+      ok: false,
+      message: 'Incorrect email or password email'
     });
   }
 });

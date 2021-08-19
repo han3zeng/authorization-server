@@ -8,8 +8,10 @@ const hashPassword = (password) => {
   return `${salt}${hash}`;
 };
 
-// salt length 32
-const recreateHash = (password, salt) => {
+const recreateHash = ({
+  password,
+  salt
+}) => {
   const { pbkdf2Sync } = crypto;
   const hash = pbkdf2Sync(password, salt, iterations, 64, 'sha512').toString('hex');
   return `${salt}${hash}`;
