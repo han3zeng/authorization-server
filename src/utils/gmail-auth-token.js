@@ -1,8 +1,13 @@
+require('dotenv').config();
 const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
-const credentials = require('../../credentials');
 const path = require('path');
+
+const credentials = {
+  clientId: process.env.gmailClientId,
+  clientSecret: process.env.gmailSecret
+};
 
 // generate a url that asks permissions for Blogger and Google Calendar scopes
 const SCOPES = [

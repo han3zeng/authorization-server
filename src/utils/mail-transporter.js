@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const { readFileSync } = require('fs');
 const path = require('path');
-const { gmailSecret } = require('../../secrets');
+const { gmailSecret } = process.env;
 
 const TOKEN_PATH = path.resolve(__dirname, '../../token.json');
 const tokenBinary = readFileSync(TOKEN_PATH);

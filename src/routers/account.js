@@ -4,10 +4,11 @@ const { v4 } = require('uuid');
 const mongoose = require('mongoose');
 const { pendingUserSchema, userSchema } = require('../db/models');
 const { hashPassword, recreateHash, createAccessToken } = require('../utils/password-auth-code');
-const { randomBytesSize } = require('../../secrets.js');
 const uuidv4 = v4;
 const { mailTransporter, createUser } = require('../utils');
 const { clientOrigin, clientCallbackPath } = require('../config');
+
+const randomBytesSize = +process.env.randomBytesSize;
 
 router.post('/authorize', async function (req, res, next) {
   const body = req.body;

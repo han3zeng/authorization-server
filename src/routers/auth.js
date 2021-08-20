@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
-const { githubSecret, googleSecret } = require('../../secrets');
 const { userSchema, pendingUserSchema } = require('../db/models');
 const mongoose = require('mongoose');
 const { getPaylodFromJWT } = require('../utils');
 const { createAccessToken } = require('../utils/password-auth-code');
 
+const { githubSecret, googleSecret } = process.env;
 // return type:
 // accessToken: data.access_token,
 // tokenType: data.token_type,
