@@ -4,9 +4,11 @@ const readline = require('readline');
 const { google } = require('googleapis');
 const path = require('path');
 
+const secrets = JSON.parse(process.env.secrets);
+
 const credentials = {
-  clientId: process.env.gmailClientId,
-  clientSecret: process.env.gmailSecret
+  clientId: secrets.gmailClientId,
+  clientSecret: secrets.gmailSecret
 };
 
 // generate a url that asks permissions for Blogger and Google Calendar scopes

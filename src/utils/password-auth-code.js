@@ -1,6 +1,7 @@
 const crypto = require('crypto');
-const randomBytesSize = +process.env.randomBytesSize;
-const iterations = +process.env.iterations;
+const secrets = JSON.parse(process.env.secrets);
+const randomBytesSize = +secrets.randomBytesSize;
+const iterations = +secrets.iterations;
 
 const hashPassword = (password) => {
   const { randomBytes, pbkdf2Sync } = crypto;

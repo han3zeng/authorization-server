@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
-const { gmailSecret, gmailClientId, token: tokenString } = process.env;
+const secrets = JSON.parse(process.env.secrets);
+const { gmailSecret, gmailClientId, token: tokenString } = secrets;
 
 const token = JSON.parse(tokenString);
 

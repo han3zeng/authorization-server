@@ -6,7 +6,8 @@ const mongoose = require('mongoose');
 const { getPaylodFromJWT } = require('../utils');
 const { createAccessToken } = require('../utils/password-auth-code');
 
-const { githubSecret, googleSecret } = process.env;
+const secrets = JSON.parse(process.env.secrets);
+const { githubSecret, googleSecret } = secrets;
 // return type:
 // accessToken: data.access_token,
 // tokenType: data.token_type,

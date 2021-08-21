@@ -8,7 +8,8 @@ const uuidv4 = v4;
 const { mailTransporter, createUser } = require('../utils');
 const { clientOrigin, clientCallbackPath } = require('../config');
 
-const randomBytesSize = +process.env.randomBytesSize;
+const secrets = JSON.parse(process.env.secrets);
+const randomBytesSize = +secrets.randomBytesSize;
 
 router.post('/authorize', async function (req, res, next) {
   const body = req.body;
