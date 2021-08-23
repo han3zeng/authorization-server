@@ -8,6 +8,9 @@ const { createAccessToken } = require('../utils/password-auth-code');
 
 const secrets = JSON.parse(process.env.secrets);
 const { githubSecretDev, githubSecretProd, googleSecret } = secrets;
+const config = require('../config');
+
+const { nodeEnv } = config;
 // return type:
 // accessToken: data.access_token,
 // tokenType: data.token_type,
@@ -38,7 +41,7 @@ async function fetchAccessToken ({
     if (service === 'github') {
       return {
         ...base,
-        client_secret: process.env.nodeEnv === 'production' ? githubSecretProd : githubSecretDev
+        client_secret: nodeEnv === 'production' ? githubSecretProd : githubSecretDev
       };
     }
     if (service === 'google') {
