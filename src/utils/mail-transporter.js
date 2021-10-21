@@ -1,8 +1,6 @@
 const nodemailer = require('nodemailer');
 const secrets = JSON.parse(process.env.secrets);
-const { gmailSecret, gmailClientId, token: tokenString } = secrets;
-
-const token = JSON.parse(tokenString);
+const { gmailSecret, gmailClientId, token } = secrets;
 
 const auth = {
   type: 'OAuth2',
