@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const { pendingUserSchema, userSchema } = require('../db/models');
 const { hashPassword, recreateHash, createAccessToken } = require('../utils/password-auth-code');
 const uuidv4 = v4;
-const { mailTransporter, createUser } = require('../utils');
+const { mailTransporter } = require('../utils');
 const { clientOrigin, clientCallbackPath } = require('../config');
 
 const secrets = JSON.parse(process.env.secrets);
@@ -21,7 +21,7 @@ router.post('/authorize', async function (req, res, next) {
   const authorizationCode = uuidv4();
   const PendingUser = mongoose.model(pendingUserSchema.key, pendingUserSchema.schema);
   const User = mongoose.model(userSchema.key, userSchema.schema);
-  const ifExisted = await PendingUser.exists({ email }) || await User.exists({ email });
+  const ifExisted = await PendingUser.exists({ email }) || await User.exists({ email, authorizationServer: 'account' });
   if (!ifExisted) {
     await PendingUser.create({
       username,
