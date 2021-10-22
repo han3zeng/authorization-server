@@ -38,6 +38,7 @@
           2. run the command to consent app and fetch new token
     2. create a file called `.env.json`
     3. `npm run create:env`
+    4. copy secrets and paste it to where you serve
 
 ## PORT
 * default: 8080
