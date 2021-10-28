@@ -8,11 +8,12 @@ const connectOptions = {
 };
 
 const secrets = JSON.parse(process.env.secrets);
-const { MONGO_URI } = secrets;
+const { MONGO_URI, MONGO_URI_DEV } = secrets;
+const DB_URI = process.env.NODE_ENV === 'production' ? MONGO_URI : MONGO_URI_DEV;
 
 function connect () {
   return new Promise((resolve, reject) => {
-    mongoose.connect(MONGO_URI, connectOptions, (err, db) => {
+    mongoose.connect(DB_URI, connectOptions, (err, db) => {
       if (err) {
         console.log('have problem connecting to mongoDb: ', err);
         reject(err);
